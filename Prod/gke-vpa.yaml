@@ -19,8 +19,8 @@ metadata:
 spec:
   targetRef:
     apiVersion: "apps/v1"
-    kind: Pod
-    
+    kind: DaemonSet
+    name: kube-proxy
   updatePolicy:
     updateMode: "Auto"
 ---

@@ -13,6 +13,8 @@ spec:
       labels:
         role: nfs-server
     spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: ingress-pool
       containers:
         - name: nfs-server
           image: gists/nfs-server:2.5.4

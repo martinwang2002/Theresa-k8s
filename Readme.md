@@ -6,7 +6,7 @@
 | --- | --- | --- | --- | --- | --- |
 | `ingress-pool` | `e2-micro` | COS | 1 | / | Free tier discount + free ip |
 | `default-pool` | `e2-small` **spot** | COS | 1-3 | / | spot discount |
-| `spot-pool` | `e2-custom-4-12288` **spot** | COS | 0-1 | Taints:spot=true | spot discount |
+| `spot-pool` | `e2-custom-4-12288` **spot** | COS | 0-1 | Taints:spot=true:NoSchedule | spot discount |
 
 Expected cost:
 1. `ingress-pool`: $0.00 for free tier
@@ -40,7 +40,7 @@ Create kubeIP service account, role and iam policy binding:
 
 ```
 gcloud iam service-accounts create kubeip-service-account --display-name "kubeIP"
-gcloud iam roles create kubeip --project $PROJECT_ID --file roles.yaml
+gcloud iam roles create kubeip --project $PROJECT_ID --file ./ConfigMap/kubeip-iam-roles.yaml
 gcloud projects add-iam-policy-binding $PROJECT_ID --member serviceAccount:kubeip-service-account@$PROJECT_ID.iam.gserviceaccount.com --role projects/$PROJECT_ID/roles/kubeip
 ```
 
@@ -60,6 +60,9 @@ kubectl create clusterrolebinding cluster-admin-binding \
 
 
 Create IP addresses and **label them**. with `kubeip=theresa-wiki-cluster`
+```
+gcloud beta compute addresses update theresa-wiki-ip --update-labels kubeip=theresa-wiki-cluster --region us-central1
+```
 
 ```
 kubectl apply -f ./ConfigMap/kubeip-ConfigMap.yaml
@@ -90,6 +93,7 @@ gcloud compute firewall-rules create tls-node-port --allow tcp:443
 1. Create persistent volume `theresa-wiki-pv` with 200GiB storage
 1. `kubectl apply -f ./Prod/theresa-wiki-pv.yaml`
 1. `kubectl apply -f ./Storage/theresa-wiki-pvc.yaml`
+1. `kubectl apply -f ./nfs-server.yaml`
 1. nfs-folder structure
 
     initiate nfs with folder structure
@@ -113,8 +117,8 @@ kubectl apply -f ./Storage/theresa-ak-ab-data.yaml
 ```
 1. ConfigMaps
 ```
-kubectl apply -f ./ConfigMap/redis-configs.yaml
-kubectl apply -f ./ConfigMap/theresa-go-configs.yaml
+kubectl apply -f ./ConfigMap/redis-ConfigMap.yaml
+kubectl apply -f ./ConfigMap/theresa-go-ConfigMap.yaml
 ```
 1. Deployments / Cronjob
 ```
@@ -122,6 +126,7 @@ kubectl apply -f redis.yaml
 kubectl apply -f theresa-go.yaml
 kubectl apply -f theresa-frontend.yaml
 kubectl apply -f theresa-drive.yaml
+kubectl apply -f theresa-ak-ab-sa.yaml
 kubectl apply -f theresa-ak-ab.yaml
 ```
 

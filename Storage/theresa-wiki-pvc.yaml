@@ -7,20 +7,5 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 210Gi
+      storage: 200Gi
   volumeName: theresa-wiki-pv
-# ---
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: theresa-wiki-pv
-# spec:
-#   storageClassName: standard
-#   capacity:
-#     storage: 200Gi
-#   accessModes:
-#     - ReadWriteOnce
-#   gcePersistentDisk:
-#     pdName: theresa-wiki-pv
-#     fsType: ext4
-#   persistentVolumeReclaimPolicy: Retain

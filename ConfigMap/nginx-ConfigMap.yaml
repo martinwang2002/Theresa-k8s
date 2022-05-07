@@ -1,17 +1,18 @@
 apiVersion: v1
 kind: ConfigMap
+metadata:
+  name: nginx
 data:
   default-conf: |
-
-    # This is needed to allow variables in proxy_pass directives, and bypass upstream startup checks
-    # Variables must use the service FQDN <service>.<namespace>.svc.cluster.local
-    resolver kube-dns.kube-system.svc.cluster.local valid=30s ipv6=off;
-    
     worker_processes 5;
 
     events {}
 
     http {
+      # This is needed to allow variables in proxy_pass directives, and bypass upstream startup checks
+      # Variables must use the service FQDN <service>.<namespace>.svc.cluster.local
+      resolver kube-dns.kube-system.svc.cluster.local valid=30s ipv6=off;
+
       # ssl
       ssl_certificate     theresa.wiki.crt;
       ssl_certificate_key theresa.wiki.key;
@@ -78,5 +79,3 @@ data:
         }
       }
     }
-metadata:
-  name: ingress-proxy
