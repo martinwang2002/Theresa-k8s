@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: theresa-drive
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: theresa-drive
+  template:
+    metadata:
+      labels:
+        role: theresa-drive
+    spec:
+      containers:
+        - name: theresa-drive
+          image: xhofe/alist:latest
+          resources:
+            limits:
+              cpu: 500m
+              memory: 100Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          ports:
+            - name: server
+              containerPort: 5244
+          volumeMounts:
+            - mountPath: /opt/alist/data
+              name: theresa-wiki-configs-pvc-drive
+              subPath: theresa-drive
+      volumes:
+        - name: theresa-wiki-configs-pvc-drive
+          persistentVolumeClaim:
+            claimName: theresa-wiki-configs-pvc
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: theresa-drive
+spec:
+  ports:
+    - name: theresa-drive
+      port: 5244
+  selector:
+    role: theresa-drive

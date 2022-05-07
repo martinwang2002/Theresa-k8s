@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: theresa-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: theresa-frontend
+  template:
+    metadata:
+      labels:
+        role: theresa-frontend
+    spec:
+      containers:
+        - name: theresa-frontend
+          image: gcr.io/theresa-wiki/theresa-frontend:latest
+          resources:
+            limits:
+              cpu: "1"
+              memory: 200Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          ports:
+            - containerPort: 3000
+          env:
+            - name: REDIS_URL
+              value: redis://redis.default.svc.cluster.local:6379
+            - name: THERESA_STATIC
+              value: static.theresa.localhost
+            - name: THERESA_S3
+              value: s3.default.svc.cluster.local
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: theresa-frontend
+spec:
+  ports:
+    - name: theresa-frontend
+      port: 3000
+  selector:
+    role: theresa-frontend

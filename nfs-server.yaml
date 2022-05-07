@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nfs-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: nfs-server
+  serviceName: "nfs-server"
+  template:
+    metadata:
+      labels:
+        role: nfs-server
+    spec:
+      containers:
+        - name: nfs-server
+          image: gists/nfs-server:2.5.4
+          env:
+            - name: NFS_OPTION
+              value: "fsid=0,rw,sync,insecure,no_root_squash,anonuid=65534,anongid=65534,no_subtree_check,nohide"
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 5m
+              memory: 20Mi
+          ports:
+            - name: nfs
+              containerPort: 2049
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /nfs-share
+              name: theresa-wiki-pvc
+      volumes:
+        - name: theresa-wiki-pvc
+          persistentVolumeClaim:
+            claimName: theresa-wiki-pvc
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nfs-server
+spec:
+  ports:
+    - name: nfs
+      port: 2049
+  selector:
+    role: nfs-server

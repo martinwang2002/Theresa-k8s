@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: redis
+  template:
+    metadata:
+      labels:
+        role: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 5m
+              memory: 20Mi
+          ports:
+            - name: redis-port
+              containerPort: 6379
+          volumeMounts:
+            - mountPath: /data
+              name: redis-data
+            - mountPath: /usr/local/etc/redis/
+              name: redis-config
+      restartPolicy: Always
+      volumes:
+        - name: redis-data
+          emptyDir: {}
+        - name: redis-config
+          configMap:
+            name: redis-config
+            items:
+            - key: redis-config
+              path: redis.conf
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis
+spec:
+  ports:
+    - name: redis-port
+      port: 6379
+  selector:
+    role: redis

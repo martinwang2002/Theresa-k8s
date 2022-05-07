@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: theresa-ak-ab-cron
+spec:
+  schedule: "*/3 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: theresa-ak-ab-spot-invoker
+          containers:
+            - name: theresa-ak-ab-cron
+              image: gcr.io/theresa-wiki/theresa-ak-ab:latest
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: SPOT_INVOKER
+                  value: "TRUE"
+              volumeMounts:
+                - mountPath: /app/AK_AB_DATA
+                  name: theresa-wiki-ak-ab
+                - mountPath: /app/configs
+                  name: theresa-wiki-configs-ak-ab
+                  subPath: theresa-ak-ab
+                - mountPath: /app/logs/ak_ab
+                  name: theresa-wiki-ak-ab-logs
+          restartPolicy: OnFailure
+          volumes:
+            - name: theresa-wiki-ak-ab
+              persistentVolumeClaim:
+                claimName: theresa-wiki-ak-ab-pvc
+            - name: theresa-wiki-configs-ak-ab
+              persistentVolumeClaim:
+                claimName: theresa-wiki-configs-pvc
+            - name: theresa-wiki-ak-ab-logs
+              emptyDir: {}
