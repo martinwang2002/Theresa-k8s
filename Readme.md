@@ -91,6 +91,7 @@ gcloud compute firewall-rules create tls-node-port --allow tcp:443
 
 ## nfs server
 1. Create persistent volume `theresa-wiki-pv` with 200GiB storage
+1. `kubectl apply -f ./Prod/gke-storage-class.yaml` Storage class for the volume
 1. `kubectl apply -f ./Prod/theresa-wiki-pv.yaml`
 1. `kubectl apply -f ./Storage/theresa-wiki-pvc.yaml`
 1. `kubectl apply -f ./nfs-server.yaml`

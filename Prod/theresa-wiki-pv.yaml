@@ -3,7 +3,7 @@ kind: PersistentVolume
 metadata:
   name: theresa-wiki-pv
 spec:
-  storageClassName: standard
+  storageClassName: theresa-wiki-standard
   capacity:
     storage: 200Gi
   accessModes:
