@@ -5,6 +5,8 @@ metadata:
 spec:
   schedule: "*/3 * * * *"
   concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
   jobTemplate:
     spec:
       template:
@@ -25,6 +27,9 @@ spec:
                   subPath: theresa-ak-ab
                 - mountPath: /app/logs/ak_ab
                   name: theresa-wiki-ak-ab-logs
+                - mountPath: /app/runtime
+                  name: theresa-wiki-configs-ak-ab
+                  subPath: theresa-ak-ab-runtime
           restartPolicy: OnFailure
           volumes:
             - name: theresa-wiki-ak-ab
