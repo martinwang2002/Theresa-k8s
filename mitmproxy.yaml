@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mitmproxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: mitmproxy
+  template:
+    metadata:
+      labels:
+        role: mitmproxy
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: ingress-pool
+      containers:
+        - name: mitmproxy
+          image: mitmproxy/mitmproxy:latest
+          command: [mitmdump, --set, stream_large_bodies=1]
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 5m
+              memory: 50Mi
+          ports:
+            - name: mitmproxy-port
+              containerPort: 8080
+      restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mitmproxy
+spec:
+  ports:
+    - name: mitmproxy-port
+      port: 8080
+  selector:
+    role: mitmproxy

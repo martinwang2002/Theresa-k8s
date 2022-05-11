@@ -19,6 +19,8 @@ spec:
               env:
                 - name: SPOT_INVOKER
                   value: "TRUE"
+                - name: GP_PROXY
+                  value: http://mitmproxy.default.svc.cluster.local:8080
               volumeMounts:
                 - mountPath: /app/AK_AB_DATA
                   name: theresa-wiki-ak-ab
