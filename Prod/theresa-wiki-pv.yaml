@@ -12,3 +12,5 @@ spec:
     pdName: theresa-wiki-pv
     fsType: ext4
   persistentVolumeReclaimPolicy: Retain
+  mountOptions:
+    - noatime

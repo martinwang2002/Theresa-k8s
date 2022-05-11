@@ -9,3 +9,4 @@ spec:
     requests:
       storage: 200Gi
   volumeName: theresa-wiki-pv
+  storageClassName: theresa-wiki-standard
