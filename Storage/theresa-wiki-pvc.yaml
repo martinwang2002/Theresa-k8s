@@ -7,6 +7,6 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 200Gi
+      storage: 225Gi
   volumeName: theresa-wiki-pv
   storageClassName: theresa-wiki-standard

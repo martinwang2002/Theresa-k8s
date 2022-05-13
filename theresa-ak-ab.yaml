@@ -12,6 +12,8 @@ spec:
       template:
         spec:
           serviceAccountName: theresa-ak-ab-spot-invoker
+          nodeSelector:
+            cloud.google.com/gke-nodepool: default-pool
           containers:
             - name: theresa-ak-ab-cron
               image: gcr.io/theresa-wiki/theresa-ak-ab:latest

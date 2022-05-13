@@ -5,7 +5,7 @@ metadata:
 spec:
   storageClassName: theresa-wiki-standard
   capacity:
-    storage: 200Gi
+    storage: 225Gi
   accessModes:
     - ReadWriteOnce
   gcePersistentDisk:
@@ -14,3 +14,9 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   mountOptions:
     - noatime
+    - noiversion
+    - journal_checksum
+    - journal_async_commit
+    - data=writeback
+    - nobarrier
+    - discard

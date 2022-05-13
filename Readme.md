@@ -102,6 +102,7 @@ gcloud compute firewall-rules create tls-node-port --allow tcp:443
     |____AK_AB_DATA
     |____theresa-wiki-configs
         |____theresa-ak-ab
+        |____theresa-ak-ab-runtime
         |____theresa-drive
     ```
     via ssh `kubectl exec nfs-server-0 -it -- sh`

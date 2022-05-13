@@ -10,4 +10,8 @@ parameters:
 allowVolumeExpansion: true
 mountOptions:
   - noatime
+  - noiversion
+  - journal_checksum
+  - journal_async_commit
+  - data=writeback
 reclaimPolicy: Retain

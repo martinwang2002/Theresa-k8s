@@ -14,13 +14,13 @@ spec:
         role: nfs-server
     spec:
       nodeSelector:
-        cloud.google.com/gke-nodepool: ingress-pool
+        cloud.google.com/gke-nodepool: default-pool
       containers:
         - name: nfs-server
           image: gists/nfs-server:2.5.4
           env:
             - name: NFS_OPTION
-              value: "fsid=0,rw,sync,insecure,no_root_squash,anonuid=65534,anongid=65534,no_subtree_check,nohide"
+              value: "fsid=0,rw,async,insecure,no_root_squash,anonuid=65534,anongid=65534,no_subtree_check,nohide"
           resources:
             limits:
               cpu: 100m
