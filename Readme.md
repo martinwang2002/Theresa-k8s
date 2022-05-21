@@ -4,7 +4,7 @@
 ## Node pools preparation
 | Node pool | Size | Image | Replicas | Tags | Price Notes |
 | --- | --- | --- | --- | --- | --- |
-| `ingress-pool` | `e2-micro` | COS | 1 | / | Free tier discount + free ip |
+| `ingress-pool` | `e2-micro` | COS | 1 | Taints:ingress=true:NoSchedule | Free tier discount + free ip |
 | `default-pool` | `e2-small` **spot** | COS | 1-3 | / | spot discount |
 | `spot-pool` | `e2-custom-4-12288` **spot** | COS | 0-1 | Taints:spot=true:NoSchedule | spot discount |
 

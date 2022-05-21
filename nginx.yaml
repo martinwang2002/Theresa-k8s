@@ -18,6 +18,10 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       nodeSelector:
         cloud.google.com/gke-nodepool: ingress-pool
+      tolerations:
+        - key: "ingress"
+          operator: "Exists"
+          effect: "NoSchedule"
       containers:
         - name: nginx
           image: "nginx"
@@ -30,7 +34,7 @@ spec:
               hostPort: 80
           volumeMounts:
             - name: theresa-wiki-tls-secret
-              mountPath: /etc/nginx
+              mountPath: /cert
               readOnly: true
             - name: nginx-conf
               mountPath: /etc/nginx/nginx.conf
@@ -59,6 +63,6 @@ spec:
             name: nginx
             items:
               - key: default-conf
-                path: default.conf
+                path: nginx.conf
         - name: nginx-cache-data
           emptyDir: {}

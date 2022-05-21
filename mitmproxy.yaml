@@ -14,6 +14,10 @@ spec:
     spec:
       nodeSelector:
         cloud.google.com/gke-nodepool: ingress-pool
+      tolerations:
+        - key: "ingress"
+          operator: "Exists"
+          effect: "NoSchedule"
       containers:
         - name: mitmproxy
           image: mitmproxy/mitmproxy:latest
