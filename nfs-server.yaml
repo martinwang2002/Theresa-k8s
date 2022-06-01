@@ -24,7 +24,7 @@ spec:
           image: gists/nfs-server:2.5.4
           env:
             - name: NFS_OPTION
-              value: "fsid=0,rw,async,insecure,no_root_squash,anonuid=65534,anongid=65534,no_subtree_check,nohide"
+              value: "fsid=0,rw,async,insecure,no_root_squash,no_subtree_check"
           resources:
             limits:
               cpu: 100m

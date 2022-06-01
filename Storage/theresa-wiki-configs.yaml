@@ -12,6 +12,7 @@ spec:
     path: "/theresa-wiki-configs"
   mountOptions:
     - nfsvers=4.2
+    - noatime
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
