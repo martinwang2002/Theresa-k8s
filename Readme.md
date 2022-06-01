@@ -4,14 +4,17 @@
 ## Node pools preparation
 | Node pool | Size | Image | Replicas | Tags | Price Notes |
 | --- | --- | --- | --- | --- | --- |
-| `ingress-pool` | `e2-micro` | COS | 1 | Taints:ingress=true:NoSchedule | Free tier discount + free ip |
+| `ingress-pool` | `e2-micro` | COS | 1 | Taints:ingress=true:NoSchedule; `https-server` | Free tier discount + free ip |
 | `default-pool` | `e2-small` **spot** | COS | 1-3 | / | spot discount |
 | `spot-pool` | `e2-custom-4-12288` **spot** | COS | 0-1 | Taints:spot=true:NoSchedule | spot discount |
 
 Expected cost:
-1. `ingress-pool`: $0.00 for free tier
-1. `default-pool`: ~$5.00 for spot discount + spot ip
-1. `spot-pool`: $1.00 for spot discount
+1. `ingress-pool`: $0.10 for free tier + SSD disk
+1. `default-pool`: ~$5.10 for spot discount + spot ip + SSD disk
+1. `spot-pool`: $2.00 for spot discount
+
+Extra notes:
+* Use 10G SSD for system drive
 
 ## Devops service account
 ```
