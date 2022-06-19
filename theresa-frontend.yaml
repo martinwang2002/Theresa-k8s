@@ -17,11 +17,11 @@ spec:
           image: gcr.io/theresa-wiki/theresa-frontend:latest
           resources:
             limits:
-              cpu: "1"
-              memory: 0.5Gi
-            requests:
               cpu: 500m
-              memory: 0.3Gi
+              memory: 500M
+            requests:
+              cpu: 200m
+              memory: 200M
           ports:
             - containerPort: 3000
           env:

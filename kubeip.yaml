@@ -94,10 +94,10 @@ spec:
           resources:
             limits:
               cpu: 50m
-              memory: 50Mi
+              memory: 50M
             requests:
               cpu: 10m
-              memory: 10Mi
+              memory: 10M
       restartPolicy: Always
       serviceAccountName: kubeip-sa
       volumes:

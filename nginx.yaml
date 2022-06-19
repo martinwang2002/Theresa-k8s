@@ -46,10 +46,10 @@ spec:
           resources:
             limits:
               cpu: 100m
-              memory: 100Mi
+              memory: 100M
             requests:
               cpu: 10m
-              memory: 20Mi
+              memory: 20M
       volumes:
         - name: theresa-wiki-tls-secret
           secret:

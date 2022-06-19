@@ -17,11 +17,11 @@ spec:
           image: gcr.io/theresa-wiki/theresa-go:latest
           resources:
             limits:
-              cpu: 1000m
-              memory: 200Mi
+              cpu: 500m
+              memory: 200M
             requests:
               cpu: 200m
-              memory: 100Mi
+              memory: 100M
           ports:
             - name: theresa-go
               containerPort: 8000

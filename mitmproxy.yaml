@@ -25,10 +25,10 @@ spec:
           resources:
             limits:
               cpu: 100m
-              memory: 100Mi
+              memory: 150M
             requests:
               cpu: 5m
-              memory: 50Mi
+              memory: 100M
           ports:
             - name: mitmproxy-port
               containerPort: 8080
