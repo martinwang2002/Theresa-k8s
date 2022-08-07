@@ -31,6 +31,12 @@ spec:
               value: static.theresa.wiki
             - name: THERESA_S3
               value: s3.default.svc.cluster.local
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
 ---
 kind: Service
 apiVersion: v1
