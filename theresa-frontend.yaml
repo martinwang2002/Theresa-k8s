@@ -28,9 +28,9 @@ spec:
             - name: REDIS_URL
               value: redis://redis.default.svc.cluster.local:6379
             - name: THERESA_STATIC
-              value: static.theresa.wiki
+              value: https://static.theresa.wiki
             - name: THERESA_S3
-              value: s3.default.svc.cluster.local
+              value: http://s3.default.svc.cluster.local/api/v0/AK/CN/Android/assets/smart/unpacked_assetbundle/assets/torappu/dynamicassets/gamedata/
           livenessProbe:
             httpGet:
               path: /api/health
@@ -46,5 +46,6 @@ spec:
   ports:
     - name: theresa-frontend
       port: 3000
+      targetPort: 3000
   selector:
     role: theresa-frontend

@@ -18,10 +18,10 @@ spec:
           resources:
             limits:
               cpu: 100m
-              memory: 100M
+              memory: 150M
             requests:
-              cpu: 5m
-              memory: 20M
+              cpu: 20m
+              memory: 75M
           ports:
             - name: redis-port
               containerPort: 6379
@@ -49,5 +49,6 @@ spec:
   ports:
     - name: redis-port
       port: 6379
+      targetPort: 6379
   selector:
     role: redis

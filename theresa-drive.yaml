@@ -48,5 +48,6 @@ spec:
   ports:
     - name: theresa-drive
       port: 5244
+      targetPort: 5244
   selector:
     role: theresa-drive

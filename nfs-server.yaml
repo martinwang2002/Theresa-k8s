@@ -53,5 +53,6 @@ spec:
   ports:
     - name: nfs
       port: 2049
+      targetPort: 2049
   selector:
     role: nfs-server
