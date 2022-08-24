@@ -27,3 +27,5 @@ data:
     rdbcompression yes
     rdbchecksum yes
     dbfilename dump.rdb
+    maxmemory 125mb
+    maxmemory-policy volatile-ttl
