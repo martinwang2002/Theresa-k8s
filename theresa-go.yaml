@@ -18,7 +18,7 @@ spec:
           resources:
             limits:
               cpu: 500m
-              memory: 500M
+              memory: 300M
             requests:
               cpu: 200m
               memory: 200M
@@ -29,7 +29,7 @@ spec:
             - mountPath: /app/AK_AB_DATA
               name: theresa-wiki-ak-ab
           env:
-            - name: REDIS_DSN
+            - name: THERESA_GO_REDIS_DSN
               value: redis://redis.default.svc.cluster.local:6379/1
             - name: GOOGLE_DRIVE_CLIENT_ID
               valueFrom:
