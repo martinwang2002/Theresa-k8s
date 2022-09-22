@@ -21,7 +21,11 @@ spec:
       containers:
         - name: mitmproxy
           image: mitmproxy/mitmproxy:latest
-          command: [mitmdump, --set, stream_large_bodies=1]
+          command:
+            - mitmdump
+            - --set
+            - stream_large_bodies=1
+            - --flow-detail=4
           resources:
             limits:
               cpu: 100m
