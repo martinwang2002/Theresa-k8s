@@ -92,7 +92,8 @@ kubectl apply -f ./nginx.yaml
 gcloud compute firewall-rules create tls-node-port --allow tcp:443
 ```
 
-## nfs server
+## storage system
+### nfs server for AK_AB_DATA
 1. Create persistent volume `theresa-wiki-pv` with 200GiB storage
 1. `kubectl apply -f ./Prod/gke-storage-class.yaml` Storage class for the volume
 1. `kubectl apply -f ./Prod/theresa-wiki-pv.yaml`
@@ -103,16 +104,23 @@ gcloud compute firewall-rules create tls-node-port --allow tcp:443
     initiate nfs with folder structure
     ```
     |____AK_AB_DATA
-    |____theresa-wiki-configs
-        |____theresa-ak-ab
-        |____theresa-ak-ab-runtime
-        |____theresa-drive
     ```
     via ssh `kubectl exec nfs-server-0 -it -- sh`
 1. Copy runtime files to folder
 ```
 kubectl cp data.db nfs-server-0:/nfs-share/theresa-wiki-configs/theresa-drive
 ```
+
+### theresa-wiki-configs
+1. `kubectl apply -f ./Storage/theresa-wiki-configs-pvc.yaml`
+1. theresa-wiki-configs structure
+```
+|____theresa-ak-ab
+|____theresa-ak-ab-runtime
+|____theresa-drive
+```
+1. `kubectl apply -f ./nfs-config.yaml`
+
 
 ## Services
 1. Storages

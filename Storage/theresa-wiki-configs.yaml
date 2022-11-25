@@ -8,8 +8,8 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    server: nfs-server.default.svc.cluster.local
-    path: "/theresa-wiki-configs"
+    server: nfs-config.default.svc.cluster.local
+    path: "/"
   mountOptions:
     - nfsvers=4.2
     - noatime

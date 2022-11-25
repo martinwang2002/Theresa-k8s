@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nfs-config
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: nfs-config
+  serviceName: "nfs-config"
+  template:
+    metadata:
+      labels:
+        role: nfs-config
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: ingress-pool
+      tolerations:
+        - key: "ingress"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: rclone
+          image: rclone/rclone
+          command: ["/bin/sh", "-c"]
+          args:
+            - rclone config create gcs gcs --non-interactive;
+              rclone mount gcs:theresa-wiki-k8s-configs /nfs-share
+              --allow-non-empty
+              --dir-cache-time 24h
+              --poll-interval 12h
+              --vfs-cache-mode writes
+              --vfs-cache-max-age 6h
+              --vfs-cache-poll-interval 1h
+              --vfs-write-back 1m
+          securityContext:
+            privileged: true
+            capabilities:
+              add: 
+                - SYS_ADMIN
+          volumeMounts:
+            - mountPath: /nfs-share
+              name: nfs-config
+        - name: nfs-server
+          image: gists/nfs-server:2.6.1
+          env:
+            - name: NFS_OPTION
+              value: fsid=0,rw,async,insecure,no_root_squash,no_subtree_check
+          resources:
+            limits:
+              cpu: 50m
+              memory: 50M
+            requests:
+              cpu: 5m
+              memory: 20M
+          ports:
+            - name: nfs
+              containerPort: 2049
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /nfs-share
+              name: nfs-config
+      volumes:
+        - name: nfs-config
+          emptyDir:
+            sizeLimit: 50Mi
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nfs-config
+spec:
+  ports:
+    - name: nfs
+      port: 2049
+      targetPort: 2049
+  selector:
+    role: nfs-config
