@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: theresa-go
-          image: gcr.io/theresa-wiki/theresa-go:latest
+          image: us-central1-docker.pkg.dev/theresa-wiki/theresa-wiki-docker-registry/theresa-go:latest
           resources:
             limits:
               cpu: 500m

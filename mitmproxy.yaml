@@ -21,6 +21,7 @@ spec:
       containers:
         - name: mitmproxy
           image: mitmproxy/mitmproxy:latest
+          imagePullPolicy: Always
           command:
             - mitmdump
             - --set

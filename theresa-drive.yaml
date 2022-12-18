@@ -21,6 +21,7 @@ spec:
       containers:
         - name: theresa-drive
           image: xhofe/alist:latest
+          imagePullPolicy: Always
           resources:
             limits:
               cpu: 500m
