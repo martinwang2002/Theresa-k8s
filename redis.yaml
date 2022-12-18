@@ -15,10 +15,13 @@ spec:
       containers:
         - name: redis
           image: redis:7-alpine
+          command:
+            - reids-cli
+            - /usr/local/etc/redis/redis.conf
           resources:
             limits:
               cpu: 100m
-              memory: 150M
+              memory: 200M
             requests:
               cpu: 20m
               memory: 75M
