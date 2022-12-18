@@ -16,7 +16,7 @@ spec:
         - name: redis
           image: redis:7-alpine
           command:
-            - reids-cli
+            - redis-server
             - /usr/local/etc/redis/redis.conf
           resources:
             limits:
