@@ -6,8 +6,8 @@ data:
   redis-config: |
     # Redis configuration
     # redis.conf is reference only
-    bind 127.0.0.1 -::1
-    protected-mode yes
+    bind * -::*
+    protected-mode no
     port 6379
     tcp-backlog 511
     timeout 0
