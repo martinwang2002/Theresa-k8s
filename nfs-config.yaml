@@ -19,33 +19,26 @@ spec:
         - key: "ingress"
           operator: "Exists"
           effect: "NoSchedule"
-      containers:
-        - name: rclone
+      initContainers:
+        - name: rclone-init
           image: rclone/rclone
           command: ["/bin/sh", "-c"]
           args:
-            - rclone config create gcs gcs --non-interactive;
-              rclone mount gcs:theresa-wiki-k8s-configs /nfs-share
-              --allow-non-empty
-              --dir-cache-time 24h
-              --poll-interval 12h
-              --vfs-cache-mode writes
-              --vfs-cache-max-age 6h
-              --vfs-cache-poll-interval 1h
-              --vfs-write-back 1m
-          securityContext:
-            privileged: true
-            capabilities:
-              add: 
-                - SYS_ADMIN
+            - rclone config touch;
+              rclone config create gcs gcs service_account_file=/var/secrets/google/key.json --non-interactive;
+              rclone copy gcs:theresa-wiki-k8s-configs /data;
+              mkdir /theresa-ak-ab-runtime
           volumeMounts:
-            - mountPath: /nfs-share
-              name: nfs-config
+            - name: nfs-config
+              mountPath: /data
+            - name: gcs-theresa-wiki-k8s-configs-key
+              mountPath: /var/secrets/google
+      containers:
         - name: nfs-server
           image: gists/nfs-server:2.6.1
           env:
             - name: NFS_OPTION
-              value: fsid=0,rw,async,insecure,no_root_squash,no_subtree_check
+              value: fsid=0,rw,sync,insecure,no_root_squash,no_subtree_check
           resources:
             limits:
               cpu: 50m
@@ -61,10 +54,27 @@ spec:
           volumeMounts:
             - mountPath: /nfs-share
               name: nfs-config
+        - name: rclone
+          image: rclone/rclone
+          command: ["/bin/sh", "-c", "--"]
+          args:
+            - rclone config touch;
+              rclone config create gcs gcs service_account_file=/var/secrets/google/key.json --non-interactive;
+              while true;
+              do rclone copy /nfs-share gcs:theresa-wiki-k8s-configs --exclude=rclone_cache/** --gcs-bucket-policy-only && sleep 6h;
+              done;
+          volumeMounts:
+            - mountPath: /nfs-share
+              name: nfs-config
+            - name: gcs-theresa-wiki-k8s-configs-key
+              mountPath: /var/secrets/google
       volumes:
         - name: nfs-config
           emptyDir:
             sizeLimit: 50Mi
+        - name: gcs-theresa-wiki-k8s-configs-key
+          secret:
+            secretName: gcs-theresa-wiki-k8s-configs
 ---
 kind: Service
 apiVersion: v1
