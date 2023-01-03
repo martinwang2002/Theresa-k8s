@@ -14,8 +14,8 @@ data:
       resolver kube-dns.kube-system.svc.cluster.local valid=30s ipv6=off;
 
       # ssl
-      ssl_certificate     theresa.wiki.crt;
-      ssl_certificate_key theresa.wiki.key;
+      ssl_certificate     /cert/theresa.wiki.crt;
+      ssl_certificate_key /cert/theresa.wiki.key;
 
       # mimes
       include mime.types;
@@ -32,7 +32,6 @@ data:
       proxy_send_timeout 300; 
 
       # cache
-      proxy_cache_path /data/nginx/cache/theresa levels=1:2 keys_zone=theresa:10m;
       proxy_cache_path /data/nginx/cache/theresa-static levels=1:2 keys_zone=theresa-static:10m;
       proxy_cache_key "$scheme$request_method$host$request_uri";
       
@@ -40,14 +39,8 @@ data:
         listen 443 ssl;
         server_name theresa.wiki;
         
-        # cache
-        proxy_cache theresa;
-        proxy_cache_valid 200 5m;
-        add_header X-Cache-Status $upstream_cache_status;
-
         location ~ {
           proxy_pass http://theresa-frontend.default.svc.cluster.local:3000;
-          # proxy_set_header Host $host;
         }
       }
 
@@ -57,7 +50,7 @@ data:
 
         # cache
         proxy_cache theresa-static;
-        proxy_cache_valid 200 24h;
+        proxy_cache_valid 200 1w;
         add_header X-Cache-Status $upstream_cache_status;
 
         location ~ {
