@@ -15,10 +15,6 @@ spec:
     spec:
       nodeSelector:
         cloud.google.com/gke-nodepool: ingress-pool
-      tolerations:
-        - key: "ingress"
-          operator: "Exists"
-          effect: "NoSchedule"
       initContainers:
         - name: rclone-init
           image: rclone/rclone
@@ -27,7 +23,7 @@ spec:
             - rclone config touch;
               rclone config create gcs gcs service_account_file=/var/secrets/google/key.json --non-interactive;
               rclone copy gcs:theresa-wiki-k8s-configs /data;
-              mkdir /theresa-ak-ab-runtime
+              mkdir /data/theresa-ak-ab-runtime
           volumeMounts:
             - name: nfs-config
               mountPath: /data

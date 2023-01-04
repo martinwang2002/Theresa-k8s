@@ -33,6 +33,8 @@ spec:
               name: redis-data
             - mountPath: /usr/local/etc/redis/
               name: redis-config
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
       restartPolicy: Always
       volumes:
         - name: redis-data

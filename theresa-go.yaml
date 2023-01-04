@@ -56,6 +56,8 @@ spec:
                 configMapKeyRef:
                   name: theresa-go-config
                   key: GOOGLE_DRIVE_TOKEN
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
       volumes:
         - name: theresa-wiki-ak-ab
           persistentVolumeClaim:

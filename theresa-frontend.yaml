@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         role: theresa-frontend
+
     spec:
       containers:
         - name: theresa-frontend
@@ -38,6 +39,8 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 60
             timeoutSeconds: 5
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
 ---
 kind: Service
 apiVersion: v1

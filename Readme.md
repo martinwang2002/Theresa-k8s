@@ -4,7 +4,7 @@
 ## Node pools preparation
 | Node pool | Size | Image | Replicas | Tags | Price Notes |
 | --- | --- | --- | --- | --- | --- |
-| `ingress-pool` | `e2-micro` | COS | 1 | Taints:ingress=true:NoSchedule; `https-server` | Free tier discount + free ip |
+| `ingress-pool` | `e2-micro` | COS | 1 | `https-server` | Free tier discount + free ip |
 | `default-pool` | `e2-small` **spot** | COS | 1-3 | / | spot discount |
 | `spot-pool` | `e2-custom-4-12288` **spot** | COS | 0-1 | Taints:spot=true:NoSchedule | spot discount |
 
@@ -164,3 +164,8 @@ kubectl apply -f ./Storage
 kubectl apply -f .
 ```
 
+## service account with gke
+
+kubectl create secret generic gcs-theresa-wiki-k8s-configs --from-file=key.json
+
+mkfs.ext4 -b 4096 -i 131072 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard -O dir_index,extent,flex_bg,bigalloc /dev/sdb

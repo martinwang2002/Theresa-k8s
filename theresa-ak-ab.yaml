@@ -25,6 +25,8 @@ spec:
                   value: http://mitmproxy.default.svc.cluster.local:8080
                 - name: REDIS_DSN
                   value: redis://redis.default.svc.cluster.local:6379/2
+                - name: GOGC
+                  value: "20"
               volumeMounts:
                 - mountPath: /app/AK_AB_DATA
                   name: theresa-wiki-ak-ab
