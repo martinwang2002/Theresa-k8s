@@ -47,6 +47,7 @@ apiVersion: v1
 metadata:
   name: theresa-frontend
 spec:
+  clusterIP: None
   ports:
     - name: theresa-frontend
       port: 3000

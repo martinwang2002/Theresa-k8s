@@ -1,51 +1,49 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: nginx
+  name: envoy
   labels:
-    app: nginx
+    app: envoy
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nginx
-  serviceName: "nginx-ingress"
+      app: envoy
+  serviceName: "envoy-ingress"
   template:
     metadata:
       labels:
-        app: nginx
+        app: envoy
     spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       nodeSelector:
         cloud.google.com/gke-nodepool: ingress-pool
       containers:
-        - name: nginx
-          image: "nginx"
+        - name: envoy
+          image: envoyproxy/envoy:v1.25-latest
+          env:
+            - name: ENVOY_UID
+              value: "0"
           ports:
             - name: https
               containerPort: 443
               hostPort: 443
-            - name: http
-              containerPort: 80
-              hostPort: 80
           volumeMounts:
             - name: theresa-wiki-tls-secret
-              mountPath: /cert
+              mountPath: /cert/
               readOnly: true
-            - name: nginx-conf
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
+            - name: envoy-conf
+              mountPath: /etc/envoy/envoy.yaml
+              subPath: envoy.yaml
               readOnly: true
-            - name: nginx-cache-data
-              mountPath: /data/nginx/cache
           resources:
             limits:
               cpu: 100m
               memory: 100M
             requests:
               cpu: 10m
-              memory: 20M
+              memory: 30M
       volumes:
         - name: theresa-wiki-tls-secret
           secret:
@@ -55,11 +53,9 @@ spec:
                 path: theresa.wiki.crt
               - key: tls.key
                 path: theresa.wiki.key
-        - name: nginx-conf
+        - name: envoy-conf
           configMap:
-            name: nginx
+            name: envoy
             items:
-              - key: default-conf
-                path: nginx.conf
-        - name: nginx-cache-data
-          emptyDir: {}
+              - key: envoy
+                path: envoy.yaml
