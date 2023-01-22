@@ -1,0 +1,6 @@
+configMapGenerator:
+  - name: envoy-test
+    files:
+      - envoy.yaml
+    options:
+      disableNameSuffixHash: true

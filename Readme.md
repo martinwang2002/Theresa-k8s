@@ -81,10 +81,9 @@ kubectl create secret tls theresa-wiki-tls-secret \
 --cert theresa.wiki.crt
 ```
 
-### Nginx
+### Envoy
 ```
-kubectl apply -f ./ConfigMap/nginx-ConfigMap.yaml
-kubectl apply -f ./nginx.yaml
+kubectl apply -k ./ConfigMap/envoy
 ```
 
 ### Firewall
@@ -167,5 +166,10 @@ kubectl apply -f .
 ## service account with gke
 
 kubectl create secret generic gcs-theresa-wiki-k8s-configs --from-file=key.json
+
+
+## enable workload identity & config connector
+use workload identity for service account
+
 
 mkfs.ext4 -b 4096 -i 131072 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard -O dir_index,extent,flex_bg,bigalloc /dev/sdb

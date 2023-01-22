@@ -43,7 +43,7 @@ spec:
               memory: 100M
             requests:
               cpu: 10m
-              memory: 30M
+              memory: 50M
       volumes:
         - name: theresa-wiki-tls-secret
           secret:
@@ -57,5 +57,5 @@ spec:
           configMap:
             name: envoy
             items:
-              - key: envoy
+              - key: envoy.yaml
                 path: envoy.yaml
