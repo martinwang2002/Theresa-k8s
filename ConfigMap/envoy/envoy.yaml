@@ -123,6 +123,13 @@ static_resources:
                         - theresa.wiki
                       name: frontend
                       routes:
+                        - direct_response:
+                            body:
+                              inline_string: Unauthorized
+                            status: 401
+                          match:
+                            safe_regex:
+                              regex: ^\/api\/(health|startup)
                         - match:
                             prefix: /
                           route:
