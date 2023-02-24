@@ -7,9 +7,9 @@ static_resources:
   clusters:
     - circuit_breakers:
         thresholds:
-          max_connections: 2
+          max_connections: 5
           max_pending_requests: 25
-          max_requests: 2
+          max_requests: 5
           max_retries: 3
       lb_policy: ROUND_ROBIN
       load_assignment:
@@ -25,9 +25,9 @@ static_resources:
       type: STRICT_DNS
     - circuit_breakers:
         thresholds:
-          max_connections: 2
+          max_connections: 5
           max_pending_requests: 25
-          max_requests: 2
+          max_requests: 5
           max_retries: 3
       lb_policy: ROUND_ROBIN
       load_assignment:
@@ -72,12 +72,13 @@ static_resources:
                           authority: "%REQ(:AUTHORITY)%"
                           bytes_received: "%BYTES_RECEIVED%"
                           bytes_sent: "%BYTES_SENT%"
+                          cf_connecting_ip: "%REQ(CF-Connecting-IP)%"
                           downstream_local_address: "%DOWNSTREAM_LOCAL_ADDRESS%"
                           downstream_remote_address: "%DOWNSTREAM_REMOTE_ADDRESS%"
                           duration: "%DURATION%"
                           forwarded_for: "%REQ(X-FORWARDED-FOR)%"
                           host: "%REQ(HOST)%"
-                          message: "[%START_TIME%] \"%REQ(:METHOD)% %REQ(:AUTHORITY)%%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%\" %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%\n"
+                          message: "[%START_TIME%] \"%REQ(:METHOD)% %REQ(:AUTHORITY)%%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%\" %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION%"
                           method: "%REQ(:METHOD)%"
                           path: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
                           protocol: "%PROTOCOL%"
