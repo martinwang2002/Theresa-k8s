@@ -10,6 +10,11 @@ spec:
     name: kube-dns
   updatePolicy:
     updateMode: "Auto"
+  resourcePolicy:
+    containerPolicies:
+    - containerName: kubedns
+      minAllowed:
+        cpu: 5m
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler

@@ -172,4 +172,16 @@ kubectl create secret generic gcs-theresa-wiki-k8s-configs --from-file=key.json
 use workload identity for service account
 
 
+
+## autoscaling of kube system components
+`kubectl edit configmap --namespace=kube-system kube-dns-autoscaler`
+https://kubernetes.io/docs/tasks/administer-cluster/dns-horizontal-autoscaling/
+https://github.com/kubernetes-sigs/cluster-proportional-autoscaler
+https://github.com/kubernetes-sigs/cluster-proportional-autoscaler#linear-mode
+turn off `preventSinglePointFailure `
+
+`kubectl edit configmap --namespace=kube-system konnectivity-agent-autoscaler-config`
+
+edit laddar config
+
 mkfs.ext4 -b 4096 -i 131072 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard -O dir_index,extent,flex_bg,bigalloc /dev/sdb

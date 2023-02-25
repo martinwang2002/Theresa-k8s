@@ -71,6 +71,7 @@ spec:
         - name: gcs-theresa-wiki-k8s-configs-key
           secret:
             secretName: gcs-theresa-wiki-k8s-configs
+      priorityClassName: theresa-wiki-priority-critical
 ---
 kind: Service
 apiVersion: v1

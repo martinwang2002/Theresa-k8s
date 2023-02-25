@@ -45,6 +45,7 @@ spec:
             items:
             - key: redis-config
               path: redis.conf
+      priorityClassName: theresa-wiki-priority-critical
 ---
 kind: Service
 apiVersion: v1

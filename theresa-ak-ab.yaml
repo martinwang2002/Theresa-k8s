@@ -16,7 +16,7 @@ spec:
             cloud.google.com/gke-nodepool: default-pool
           containers:
             - name: theresa-ak-ab-cron
-              image: us-central1-docker.pkg.dev/theresa-wiki/theresa-wiki-docker-registry/theresa-frontend:latest
+              image: us-central1-docker.pkg.dev/theresa-wiki/theresa-wiki-docker-registry/theresa-ak-ab:latest
               imagePullPolicy: IfNotPresent
               env:
                 - name: SPOT_INVOKER
@@ -48,3 +48,4 @@ spec:
                 claimName: theresa-wiki-configs-pvc
             - name: theresa-wiki-ak-ab-logs
               emptyDir: {}
+          priorityClassName: theresa-wiki-priority-low

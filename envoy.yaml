@@ -59,3 +59,4 @@ spec:
             items:
               - key: envoy.yaml
                 path: envoy.yaml
+      priorityClassName: theresa-wiki-priority-critical

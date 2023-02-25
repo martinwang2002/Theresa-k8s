@@ -1,0 +1,34 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: theresa-wiki-priority-default
+value: 10000
+description: "This priority class should be used for no service pods only."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: theresa-wiki-priority-critical
+value: 19000
+description: "This priority class should be used for `redis`, `nfs-config`, `nfs-server` service pods only."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: theresa-wiki-priority-go
+value: 9990
+description: "This priority class should be used for `theresa-go` service pods only."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: theresa-wiki-priority-frontend
+value: 9980
+description: "This priority class should be used for `theresa-frontend` service pods only."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: theresa-wiki-priority-low
+value: 1000
+description: "This priority class should be used for `theresa-drive`, `mitmproxy`, `theresa-ak-ab` service pods only."

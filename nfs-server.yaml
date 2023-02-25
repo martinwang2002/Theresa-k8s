@@ -40,6 +40,7 @@ spec:
         - name: theresa-wiki-pvc
           persistentVolumeClaim:
             claimName: theresa-wiki-pvc
+      priorityClassName: theresa-wiki-priority-critical
 ---
 kind: Service
 apiVersion: v1

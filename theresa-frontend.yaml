@@ -18,7 +18,7 @@ spec:
           resources:
             limits:
               cpu: 500m
-              memory: 500M
+              memory: 750M
             requests:
               cpu: 200m
               memory: 200M
@@ -36,7 +36,7 @@ spec:
               path: /api/health
               port: 3000
             initialDelaySeconds: 60
-            periodSeconds: 60
+            periodSeconds: 10
             timeoutSeconds: 5
           startupProbe:
             httpGet:
@@ -47,6 +47,7 @@ spec:
             timeoutSeconds: 5
       nodeSelector:
         cloud.google.com/gke-nodepool: default-pool
+      priorityClassName: theresa-wiki-priority-frontend
 ---
 kind: Service
 apiVersion: v1
