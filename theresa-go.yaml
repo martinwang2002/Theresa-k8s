@@ -35,7 +35,7 @@ spec:
               valueFrom:
                 resourceFieldRef:
                   containerName: theresa-go
-                  resource: limits.memory
+                  resource: requests.memory
             - name: GOOGLE_DRIVE_CLIENT_ID
               valueFrom:
                 configMapKeyRef:

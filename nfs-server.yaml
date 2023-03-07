@@ -41,6 +41,10 @@ spec:
           persistentVolumeClaim:
             claimName: theresa-wiki-pvc
       priorityClassName: theresa-wiki-priority-critical
+      tolerations:
+        - key: ingress
+          operator: Exists
+          effect: NoSchedule
 ---
 kind: Service
 apiVersion: v1

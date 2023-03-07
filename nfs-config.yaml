@@ -72,6 +72,10 @@ spec:
           secret:
             secretName: gcs-theresa-wiki-k8s-configs
       priorityClassName: theresa-wiki-priority-critical
+      tolerations:
+        - key: ingress
+          operator: Exists
+          effect: NoSchedule
 ---
 kind: Service
 apiVersion: v1

@@ -19,6 +19,10 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       nodeSelector:
         cloud.google.com/gke-nodepool: ingress-pool
+      tolerations:
+        - key: ingress
+          operator: Exists
+          effect: NoSchedule
       containers:
         - name: envoy
           image: envoyproxy/envoy:v1.25-latest

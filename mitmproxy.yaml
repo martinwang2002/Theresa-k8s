@@ -35,6 +35,10 @@ spec:
               containerPort: 8080
       restartPolicy: Always
       priorityClassName: theresa-wiki-priority-low
+      tolerations:
+        - key: ingress
+          operator: Exists
+          effect: NoSchedule
 ---
 kind: Service
 apiVersion: v1
