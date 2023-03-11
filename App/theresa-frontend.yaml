@@ -20,6 +20,16 @@ spec:
               value: https://static.theresa.wiki
             - name: THERESA_S3
               value: http://s3.default.svc.cluster.local/api/v0/AK/CN/Android/assets/smart/unpacked_assetbundle/assets/torappu/dynamicassets/gamedata/
+            - name: CLOUDFLARE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: CLOUDFLARE_API_TOKEN
+                  name: theresa-frontent-cloudflare-config
+            - name: CLOUDFLARE_ZONE_ID
+              valueFrom:
+                secretKeyRef:
+                  key: CLOUDFLARE_ZONE_ID
+                  name: theresa-frontent-cloudflare-config
           image: us-central1-docker.pkg.dev/theresa-wiki/theresa-wiki-docker-registry/theresa-frontend:latest
           livenessProbe:
             httpGet:

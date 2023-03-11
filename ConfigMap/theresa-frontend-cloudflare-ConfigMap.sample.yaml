@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: theresa-frontent-cloudflare-config
+stringData:
+  CLOUDFLARE_API_TOKEN: CLOUDFLARE_API_TOKEN
+  CLOUDFLARE_ZONE_ID: CLOUDFLARE_ZONE_ID
+type: Opaque
