@@ -6,31 +6,31 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: default
   name: theresa-ak-ab-spot-invoker
+  namespace: default
 rules:
-- apiGroups: ["batch"]
-  resources: 
-    - pods
-    - jobs
-    - pods/status
-  verbs: 
-    - get
-    - list
-    - watch
-    - create
-    - delete
+  - apiGroups: [batch]
+    resources:
+      - pods
+      - jobs
+      - pods/status
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - delete
 ---
-kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
 metadata:
   name: theresa-ak-ab-spot-invoker
   namespace: default
-subjects:
-  - kind: ServiceAccount
-    name: theresa-ak-ab-spot-invoker
-    namespace: default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: theresa-ak-ab-spot-invoker
+subjects:
+  - kind: ServiceAccount
+    name: theresa-ak-ab-spot-invoker
+    namespace: default

@@ -13,8 +13,24 @@ spec:
         role: theresa-frontend
     spec:
       containers:
-        - name: theresa-frontend
+        - env:
+            - name: REDIS_URL
+              value: redis://redis.default.svc.cluster.local:6379/0
+            - name: THERESA_STATIC
+              value: https://static.theresa.wiki
+            - name: THERESA_S3
+              value: http://s3.default.svc.cluster.local/api/v0/AK/CN/Android/assets/smart/unpacked_assetbundle/assets/torappu/dynamicassets/gamedata/
           image: us-central1-docker.pkg.dev/theresa-wiki/theresa-wiki-docker-registry/theresa-frontend:latest
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+          name: theresa-frontend
+          ports:
+            - containerPort: 3000
           resources:
             limits:
               cpu: 500m
@@ -22,35 +38,19 @@ spec:
             requests:
               cpu: 200m
               memory: 200M
-          ports:
-            - containerPort: 3000
-          env:
-            - name: REDIS_URL
-              value: redis://redis.default.svc.cluster.local:6379/0
-            - name: THERESA_STATIC
-              value: https://static.theresa.wiki
-            - name: THERESA_S3
-              value: http://s3.default.svc.cluster.local/api/v0/AK/CN/Android/assets/smart/unpacked_assetbundle/assets/torappu/dynamicassets/gamedata/
-          livenessProbe:
-            httpGet:
-              path: /api/health
-              port: 3000
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            timeoutSeconds: 5
           startupProbe:
+            failureThreshold: 30
             httpGet:
               path: /api/startup
               port: 3000
-            failureThreshold: 30
             periodSeconds: 30
             timeoutSeconds: 5
       nodeSelector:
         cloud.google.com/gke-nodepool: default-pool
       priorityClassName: theresa-wiki-priority-frontend
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: theresa-frontend
 spec:

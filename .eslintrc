@@ -1,0 +1,12 @@
+{
+    "extends": [
+        "eslint:all",
+        "plugin:yml/standard"
+    ],
+    "rules": {
+        "yml/sort-keys": "error",
+        "yml/key-spacing": "error",
+        "linebreak-style": "off",
+        "max-len": "off"
+    }
+}

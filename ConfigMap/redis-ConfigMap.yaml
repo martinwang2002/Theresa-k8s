@@ -1,7 +1,4 @@
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: redis-config
 data:
   redis-config: |
     # Redis configuration
@@ -29,3 +26,6 @@ data:
     dbfilename dump.rdb
     maxmemory 125mb
     maxmemory-policy volatile-ttl
+kind: ConfigMap
+metadata:
+  name: redis-config

@@ -3,22 +3,14 @@ kind: CronJob
 metadata:
   name: theresa-ak-ab-cron
 spec:
-  schedule: "*/3 * * * *"
   concurrencyPolicy: Forbid
-  successfulJobsHistoryLimit: 5
   failedJobsHistoryLimit: 5
   jobTemplate:
     spec:
       template:
         spec:
-          serviceAccountName: theresa-ak-ab-spot-invoker
-          nodeSelector:
-            cloud.google.com/gke-nodepool: default-pool
           containers:
-            - name: theresa-ak-ab-cron
-              image: us-central1-docker.pkg.dev/theresa-wiki/theresa-wiki-docker-registry/theresa-ak-ab:latest
-              imagePullPolicy: IfNotPresent
-              env:
+            - env:
                 - name: SPOT_INVOKER
                   value: "TRUE"
                 - name: GP_PROXY
@@ -27,6 +19,9 @@ spec:
                   value: redis://redis.default.svc.cluster.local:6379/2
                 - name: GOGC
                   value: "20"
+              image: us-central1-docker.pkg.dev/theresa-wiki/theresa-wiki-docker-registry/theresa-ak-ab:latest
+              imagePullPolicy: IfNotPresent
+              name: theresa-ak-ab-cron
               volumeMounts:
                 - mountPath: /app/AK_AB_DATA
                   name: theresa-wiki-ak-ab
@@ -38,7 +33,11 @@ spec:
                 - mountPath: /app/runtime
                   name: theresa-wiki-configs-ak-ab
                   subPath: theresa-ak-ab-runtime
+          nodeSelector:
+            cloud.google.com/gke-nodepool: default-pool
+          priorityClassName: theresa-wiki-priority-low
           restartPolicy: OnFailure
+          serviceAccountName: theresa-ak-ab-spot-invoker
           volumes:
             - name: theresa-wiki-ak-ab
               persistentVolumeClaim:
@@ -46,6 +45,7 @@ spec:
             - name: theresa-wiki-configs-ak-ab
               persistentVolumeClaim:
                 claimName: theresa-wiki-configs-pvc
-            - name: theresa-wiki-ak-ab-logs
-              emptyDir: {}
-          priorityClassName: theresa-wiki-priority-low
+            - emptyDir: {}
+              name: theresa-wiki-ak-ab-logs
+  schedule: "*/3 * * * *"
+  successfulJobsHistoryLimit: 5

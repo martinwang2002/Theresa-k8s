@@ -1,46 +1,30 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: envoy
   labels:
     app: envoy
+  name: envoy
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: envoy
-  serviceName: "envoy-ingress"
+  serviceName: envoy-ingress
   template:
     metadata:
       labels:
         app: envoy
     spec:
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
-      nodeSelector:
-        cloud.google.com/gke-nodepool: ingress-pool
-      tolerations:
-        - key: ingress
-          operator: Exists
-          effect: NoSchedule
       containers:
-        - name: envoy
-          image: envoyproxy/envoy:v1.25-latest
-          env:
+        - env:
             - name: ENVOY_UID
               value: "0"
+          image: envoyproxy/envoy:v1.25-latest
+          name: envoy
           ports:
-            - name: https
-              containerPort: 443
+            - containerPort: 443
               hostPort: 443
-          volumeMounts:
-            - name: theresa-wiki-tls-secret
-              mountPath: /cert/
-              readOnly: true
-            - name: envoy-conf
-              mountPath: /etc/envoy/envoy.yaml
-              subPath: envoy.yaml
-              readOnly: true
+              name: https
           resources:
             limits:
               cpu: 100m
@@ -48,19 +32,35 @@ spec:
             requests:
               cpu: 10m
               memory: 50M
+          volumeMounts:
+            - mountPath: /cert/
+              name: theresa-wiki-tls-secret
+              readOnly: true
+            - mountPath: /etc/envoy/envoy.yaml
+              name: envoy-conf
+              readOnly: true
+              subPath: envoy.yaml
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      nodeSelector:
+        cloud.google.com/gke-nodepool: ingress-pool
+      priorityClassName: theresa-wiki-priority-critical
+      tolerations:
+        - effect: NoSchedule
+          key: ingress
+          operator: Exists
       volumes:
         - name: theresa-wiki-tls-secret
           secret:
-            secretName: theresa-wiki-tls-secret
             items:
               - key: tls.crt
                 path: theresa.wiki.crt
               - key: tls.key
                 path: theresa.wiki.key
-        - name: envoy-conf
-          configMap:
-            name: envoy
+            secretName: theresa-wiki-tls-secret
+        - configMap:
             items:
               - key: envoy.yaml
                 path: envoy.yaml
-      priorityClassName: theresa-wiki-priority-critical
+            name: envoy
+          name: envoy-conf

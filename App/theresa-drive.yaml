@@ -13,9 +13,12 @@ spec:
         role: theresa-drive
     spec:
       containers:
-        - name: theresa-drive
-          image: xhofe/alist:latest
+        - image: xhofe/alist:latest
           imagePullPolicy: Always
+          name: theresa-drive
+          ports:
+            - containerPort: 5244
+              name: server
           resources:
             limits:
               cpu: 50m
@@ -23,21 +26,18 @@ spec:
             requests:
               cpu: 10m
               memory: 20M
-          ports:
-            - name: server
-              containerPort: 5244
           volumeMounts:
             - mountPath: /opt/alist/data
               name: theresa-wiki-configs-pvc-drive
               subPath: theresa-drive
+      priorityClassName: theresa-wiki-priority-low
       volumes:
         - name: theresa-wiki-configs-pvc-drive
           persistentVolumeClaim:
             claimName: theresa-wiki-configs-pvc
-      priorityClassName: theresa-wiki-priority-low
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: theresa-drive
 spec:

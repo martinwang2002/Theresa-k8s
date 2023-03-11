@@ -13,11 +13,14 @@ spec:
         role: redis
     spec:
       containers:
-        - name: redis
-          image: redis:7-alpine
-          command:
+        - command:
             - redis-server
             - /usr/local/etc/redis/redis.conf
+          image: redis:7-alpine
+          name: redis
+          ports:
+            - containerPort: 6379
+              name: redis-port
           resources:
             limits:
               cpu: 100m
@@ -25,9 +28,6 @@ spec:
             requests:
               cpu: 20m
               memory: 75M
-          ports:
-            - name: redis-port
-              containerPort: 6379
           volumeMounts:
             - mountPath: /data
               name: redis-data
@@ -35,20 +35,20 @@ spec:
               name: redis-config
       nodeSelector:
         cloud.google.com/gke-nodepool: default-pool
+      priorityClassName: theresa-wiki-priority-critical
       restartPolicy: Always
       volumes:
-        - name: redis-data
-          emptyDir: {}
-        - name: redis-config
-          configMap:
-            name: redis-config
+        - emptyDir: {}
+          name: redis-data
+        - configMap:
             items:
-            - key: redis-config
-              path: redis.conf
-      priorityClassName: theresa-wiki-priority-critical
+              - key: redis-config
+                path: redis.conf
+            name: redis-config
+          name: redis-config
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: redis
 spec:

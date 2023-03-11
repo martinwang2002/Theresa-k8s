@@ -12,17 +12,18 @@ spec:
       labels:
         role: mitmproxy
     spec:
-      nodeSelector:
-        cloud.google.com/gke-nodepool: ingress-pool
       containers:
-        - name: mitmproxy
-          image: mitmproxy/mitmproxy:latest
-          imagePullPolicy: Always
-          command:
+        - command:
             - mitmdump
             - --set
             - stream_large_bodies=1
             - --flow-detail=4
+          image: mitmproxy/mitmproxy:latest
+          imagePullPolicy: Always
+          name: mitmproxy
+          ports:
+            - containerPort: 8080
+              name: mitmproxy-port
           resources:
             limits:
               cpu: 100m
@@ -30,18 +31,17 @@ spec:
             requests:
               cpu: 5m
               memory: 100M
-          ports:
-            - name: mitmproxy-port
-              containerPort: 8080
-      restartPolicy: Always
+      nodeSelector:
+        cloud.google.com/gke-nodepool: ingress-pool
       priorityClassName: theresa-wiki-priority-low
+      restartPolicy: Always
       tolerations:
-        - key: ingress
+        - effect: NoSchedule
+          key: ingress
           operator: Exists
-          effect: NoSchedule
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: mitmproxy
 spec:

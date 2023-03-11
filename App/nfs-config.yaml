@@ -7,34 +7,21 @@ spec:
   selector:
     matchLabels:
       role: nfs-config
-  serviceName: "nfs-config"
+  serviceName: nfs-config
   template:
     metadata:
       labels:
         role: nfs-config
     spec:
-      nodeSelector:
-        cloud.google.com/gke-nodepool: ingress-pool
-      initContainers:
-        - name: rclone-init
-          image: rclone/rclone
-          command: ["/bin/sh", "-c"]
-          args:
-            - rclone config touch;
-              rclone config create gcs gcs service_account_file=/var/secrets/google/key.json --non-interactive;
-              rclone copy gcs:theresa-wiki-k8s-configs /data;
-              mkdir /data/theresa-ak-ab-runtime
-          volumeMounts:
-            - name: nfs-config
-              mountPath: /data
-            - name: gcs-theresa-wiki-k8s-configs-key
-              mountPath: /var/secrets/google
       containers:
-        - name: nfs-server
-          image: gists/nfs-server:2.6.1
-          env:
+        - env:
             - name: NFS_OPTION
               value: fsid=0,rw,sync,insecure,no_root_squash,no_subtree_check
+          image: gists/nfs-server:2.6.1
+          name: nfs-server
+          ports:
+            - containerPort: 2049
+              name: nfs
           resources:
             limits:
               cpu: 50m
@@ -42,43 +29,56 @@ spec:
             requests:
               cpu: 5m
               memory: 20M
-          ports:
-            - name: nfs
-              containerPort: 2049
           securityContext:
             privileged: true
           volumeMounts:
             - mountPath: /nfs-share
               name: nfs-config
-        - name: rclone
-          image: rclone/rclone
-          command: ["/bin/sh", "-c", "--"]
-          args:
+        - args:
             - rclone config touch;
               rclone config create gcs gcs service_account_file=/var/secrets/google/key.json --non-interactive;
               while true;
               do rclone copy /nfs-share gcs:theresa-wiki-k8s-configs --exclude=rclone_cache/** --gcs-bucket-policy-only && sleep 6h;
               done;
+          command: [/bin/sh, -c, --]
+          image: rclone/rclone
+          name: rclone
           volumeMounts:
             - mountPath: /nfs-share
               name: nfs-config
-            - name: gcs-theresa-wiki-k8s-configs-key
-              mountPath: /var/secrets/google
+            - mountPath: /var/secrets/google
+              name: gcs-theresa-wiki-k8s-configs-key
+      initContainers:
+        - args:
+            - rclone config touch;
+              rclone config create gcs gcs service_account_file=/var/secrets/google/key.json --non-interactive;
+              rclone copy gcs:theresa-wiki-k8s-configs /data;
+              mkdir /data/theresa-ak-ab-runtime
+          command: [/bin/sh, -c]
+          image: rclone/rclone
+          name: rclone-init
+          volumeMounts:
+            - mountPath: /data
+              name: nfs-config
+            - mountPath: /var/secrets/google
+              name: gcs-theresa-wiki-k8s-configs-key
+      nodeSelector:
+        cloud.google.com/gke-nodepool: ingress-pool
+      priorityClassName: theresa-wiki-priority-critical
+      tolerations:
+        - effect: NoSchedule
+          key: ingress
+          operator: Exists
       volumes:
-        - name: nfs-config
-          emptyDir:
+        - emptyDir:
             sizeLimit: 50Mi
+          name: nfs-config
         - name: gcs-theresa-wiki-k8s-configs-key
           secret:
             secretName: gcs-theresa-wiki-k8s-configs
-      priorityClassName: theresa-wiki-priority-critical
-      tolerations:
-        - key: ingress
-          operator: Exists
-          effect: NoSchedule
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: nfs-config
 spec:

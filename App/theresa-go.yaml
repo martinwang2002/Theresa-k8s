@@ -13,22 +13,7 @@ spec:
         role: theresa-go
     spec:
       containers:
-        - name: theresa-go
-          image: us-central1-docker.pkg.dev/theresa-wiki/theresa-wiki-docker-registry/theresa-go:latest
-          resources:
-            limits:
-              cpu: 500m
-              memory: 750M
-            requests:
-              cpu: 200m
-              memory: 200M
-          ports:
-            - name: theresa-go
-              containerPort: 8000
-          volumeMounts:
-            - mountPath: /app/AK_AB_DATA
-              name: theresa-wiki-ak-ab
-          env:
+        - env:
             - name: THERESA_GO_REDIS_DSN
               value: redis://redis.default.svc.cluster.local:6379/1
             - name: GOMEMLIMIT
@@ -39,38 +24,53 @@ spec:
             - name: GOOGLE_DRIVE_CLIENT_ID
               valueFrom:
                 configMapKeyRef:
-                  name: theresa-go-config
                   key: GOOGLE_DRIVE_CLIENT_ID
+                  name: theresa-go-config
             - name: GOOGLE_DRIVE_CLIENT_SECRET
               valueFrom:
                 configMapKeyRef:
-                  name: theresa-go-config
                   key: GOOGLE_DRIVE_CLIENT_SECRET
+                  name: theresa-go-config
             - name: GOOGLE_DRIVE_REFRESH_TOKEN
               valueFrom:
                 configMapKeyRef:
-                  name: theresa-go-config
                   key: GOOGLE_DRIVE_REFRESH_TOKEN
+                  name: theresa-go-config
             - name: GOOGLE_DRIVE_ROOT_FOLDER_ID
               valueFrom:
                 configMapKeyRef:
-                  name: theresa-go-config
                   key: GOOGLE_DRIVE_ROOT_FOLDER_ID
+                  name: theresa-go-config
             - name: GOOGLE_DRIVE_TOKEN
               valueFrom:
                 configMapKeyRef:
-                  name: theresa-go-config
                   key: GOOGLE_DRIVE_TOKEN
+                  name: theresa-go-config
+          image: us-central1-docker.pkg.dev/theresa-wiki/theresa-wiki-docker-registry/theresa-go:latest
+          name: theresa-go
+          ports:
+            - containerPort: 8000
+              name: theresa-go
+          resources:
+            limits:
+              cpu: 500m
+              memory: 750M
+            requests:
+              cpu: 200m
+              memory: 200M
+          volumeMounts:
+            - mountPath: /app/AK_AB_DATA
+              name: theresa-wiki-ak-ab
       nodeSelector:
         cloud.google.com/gke-nodepool: default-pool
+      priorityClassName: theresa-wiki-priority-go
       volumes:
         - name: theresa-wiki-ak-ab
           persistentVolumeClaim:
             claimName: theresa-wiki-ak-ab-pvc
-      priorityClassName: theresa-wiki-priority-go      
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: theresa-go
 spec:
@@ -82,8 +82,8 @@ spec:
   selector:
     role: theresa-go
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: s3
 spec:

@@ -7,20 +7,21 @@ spec:
   selector:
     matchLabels:
       role: nfs-server
-  serviceName: "nfs-server"
+  serviceName: nfs-server
   template:
     metadata:
       labels:
         role: nfs-server
     spec:
-      nodeSelector:
-        cloud.google.com/gke-nodepool: ingress-pool
       containers:
-        - name: nfs-server
-          image: gists/nfs-server:2.6.1
-          env:
+        - env:
             - name: NFS_OPTION
               value: fsid=0,rw,async,insecure,no_root_squash,no_subtree_check
+          image: gists/nfs-server:2.6.1
+          name: nfs-server
+          ports:
+            - containerPort: 2049
+              name: nfs
           resources:
             limits:
               cpu: 100m
@@ -28,26 +29,25 @@ spec:
             requests:
               cpu: 5m
               memory: 20M
-          ports:
-            - name: nfs
-              containerPort: 2049
           securityContext:
             privileged: true
           volumeMounts:
             - mountPath: /nfs-share
               name: theresa-wiki-pvc
+      nodeSelector:
+        cloud.google.com/gke-nodepool: ingress-pool
+      priorityClassName: theresa-wiki-priority-critical
+      tolerations:
+        - effect: NoSchedule
+          key: ingress
+          operator: Exists
       volumes:
         - name: theresa-wiki-pvc
           persistentVolumeClaim:
             claimName: theresa-wiki-pvc
-      priorityClassName: theresa-wiki-priority-critical
-      tolerations:
-        - key: ingress
-          operator: Exists
-          effect: NoSchedule
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: nfs-server
 spec:

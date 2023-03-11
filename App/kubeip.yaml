@@ -1,5 +1,5 @@
 #  We need to get RBAC permissions first with
-#  kubectl create clusterrolebinding cluster-admin-binding \
+#  Kubectl create clusterrolebinding cluster-admin-binding \
 #    --clusterrole cluster-admin --user `gcloud config list --format 'value(core.account)'`
 
 apiVersion: apps/v1
@@ -17,80 +17,73 @@ spec:
       labels:
         app: kubeip
     spec:
-      priorityClassName: system-cluster-critical
-      nodeSelector:
-        cloud.google.com/gke-nodepool: default-pool
       containers:
-        - name: "kubeip"
-          image: doitintl/kubeip:latest
-          imagePullPolicy: Always
-          volumeMounts:
-            - name: google-cloud-key
-              mountPath: /var/secrets/google
-          env:
-            - name: "KUBEIP_LABELKEY"
+        - env:
+            - name: KUBEIP_LABELKEY
               valueFrom:
                 configMapKeyRef:
-                  key: "KUBEIP_LABELKEY"
-                  name: "kubeip-config"
-            - name: "KUBEIP_LABELVALUE"
+                  key: KUBEIP_LABELKEY
+                  name: kubeip-config
+            - name: KUBEIP_LABELVALUE
               valueFrom:
                 configMapKeyRef:
-                  key: "KUBEIP_LABELVALUE"
-                  name: "kubeip-config"
-            - name: "KUBEIP_NODEPOOL"
+                  key: KUBEIP_LABELVALUE
+                  name: kubeip-config
+            - name: KUBEIP_NODEPOOL
               valueFrom:
                 configMapKeyRef:
-                  key: "KUBEIP_NODEPOOL"
-                  name: "kubeip-config"
-            - name: "KUBEIP_FORCEASSIGNMENT"
+                  key: KUBEIP_NODEPOOL
+                  name: kubeip-config
+            - name: KUBEIP_FORCEASSIGNMENT
               valueFrom:
                 configMapKeyRef:
-                  key: "KUBEIP_FORCEASSIGNMENT"
-                  name: "kubeip-config"
-            - name: "KUBEIP_ORDERBYLABELKEY"
+                  key: KUBEIP_FORCEASSIGNMENT
+                  name: kubeip-config
+            - name: KUBEIP_ORDERBYLABELKEY
               valueFrom:
                 configMapKeyRef:
-                  key: "KUBEIP_ORDERBYLABELKEY"
-                  name: "kubeip-config"
-            - name: "KUBEIP_ORDERBYDESC"
+                  key: KUBEIP_ORDERBYLABELKEY
+                  name: kubeip-config
+            - name: KUBEIP_ORDERBYDESC
               valueFrom:
                 configMapKeyRef:
-                  key: "KUBEIP_ORDERBYDESC"
-                  name: "kubeip-config"
-            - name: "KUBEIP_ADDITIONALNODEPOOLS"
+                  key: KUBEIP_ORDERBYDESC
+                  name: kubeip-config
+            - name: KUBEIP_ADDITIONALNODEPOOLS
               valueFrom:
                 configMapKeyRef:
-                  key: "KUBEIP_ADDITIONALNODEPOOLS"
-                  name: "kubeip-config"
-            - name: "KUBEIP_COPYLABELS"
+                  key: KUBEIP_ADDITIONALNODEPOOLS
+                  name: kubeip-config
+            - name: KUBEIP_COPYLABELS
               valueFrom:
                 configMapKeyRef:
-                  key: "KUBEIP_COPYLABELS"
-                  name: "kubeip-config"
-            - name: "KUBEIP_CLEARLABELS"
+                  key: KUBEIP_COPYLABELS
+                  name: kubeip-config
+            - name: KUBEIP_CLEARLABELS
               valueFrom:
                 configMapKeyRef:
-                  key: "KUBEIP_CLEARLABELS"
-                  name: "kubeip-config"
-            - name: "KUBEIP_DRYRUN"
+                  key: KUBEIP_CLEARLABELS
+                  name: kubeip-config
+            - name: KUBEIP_DRYRUN
               valueFrom:
                 configMapKeyRef:
-                  key: "KUBEIP_DRYRUN"
-                  name: "kubeip-config"
-            - name: "KUBEIP_TICKER"
+                  key: KUBEIP_DRYRUN
+                  name: kubeip-config
+            - name: KUBEIP_TICKER
               valueFrom:
                 configMapKeyRef:
-                  key: "KUBEIP_TICKER"
-                  name: "kubeip-config"
-            - name: "KUBEIP_ALLNODEPOOLS"
+                  key: KUBEIP_TICKER
+                  name: kubeip-config
+            - name: KUBEIP_ALLNODEPOOLS
               valueFrom:
                 configMapKeyRef:
-                  key: "KUBEIP_ALLNODEPOOLS"
-                  name: "kubeip-config"
-
+                  key: KUBEIP_ALLNODEPOOLS
+                  name: kubeip-config
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /var/secrets/google/key.json
+          image: doitintl/kubeip:latest
+          imagePullPolicy: Always
+          name: kubeip
           resources:
             limits:
               cpu: 50m
@@ -98,44 +91,47 @@ spec:
             requests:
               cpu: 10m
               memory: 10M
+          volumeMounts:
+            - mountPath: /var/secrets/google
+              name: google-cloud-key
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
+      priorityClassName: system-cluster-critical
       restartPolicy: Always
       serviceAccountName: kubeip-sa
       volumes:
         - name: google-cloud-key
           secret:
             secretName: kubeip-key
-
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: kubeip-sa
   namespace: kube-system
-
 ---
-kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
 metadata:
   name: kubeip-sa
   namespace: kube-system
 rules:
   - apiGroups: [""]
-    resources: ["nodes"]
-    verbs: ["get", "list", "watch", "patch"]
+    resources: [nodes]
+    verbs: [get, list, watch, patch]
   - apiGroups: [""]
-    resources: ["pods"]
-    verbs: ["get", "list", "watch"]
-
+    resources: [pods]
+    verbs: [get, list, watch]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: kubeip-sa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubeip-sa
 subjects:
   - kind: ServiceAccount
     name: kubeip-sa
     namespace: kube-system
-roleRef:
-  kind: ClusterRole
-  name: kubeip-sa
-  apiGroup: rbac.authorization.k8s.io
