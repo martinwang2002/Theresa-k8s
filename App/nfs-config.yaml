@@ -35,10 +35,9 @@ spec:
             - mountPath: /nfs-share
               name: nfs-config
         - args:
-            - rclone config touch;
-              rclone config create gcs gcs service_account_file=/var/secrets/google/key.json --non-interactive;
+            - rclone config touch -q;
               while true;
-              do rclone copy /nfs-share gcs:theresa-wiki-k8s-configs --exclude=rclone_cache/** --gcs-bucket-policy-only && sleep 6h;
+              do rclone copy /nfs-share :gcs,service_account_file=/var/secrets/google/key.json:/theresa-wiki-k8s-configs --exclude=rclone_cache/** --gcs-bucket-policy-only -vvv && sleep 6h;
               done;
           command: [/bin/sh, -c, --]
           image: rclone/rclone
@@ -50,10 +49,10 @@ spec:
               name: gcs-theresa-wiki-k8s-configs-key
       initContainers:
         - args:
-            - rclone config touch;
-              rclone config create gcs gcs service_account_file=/var/secrets/google/key.json --non-interactive;
-              rclone copy gcs:theresa-wiki-k8s-configs /data;
-              mkdir /data/theresa-ak-ab-runtime
+            - set -e;
+              rclone config touch -q;
+              rclone copy :gcs,service_account_file=/var/secrets/google/key.json:/theresa-wiki-k8s-configs /data -vvv;
+              mkdir /data/theresa-ak-ab-runtime;
           command: [/bin/sh, -c]
           image: rclone/rclone
           name: rclone-init

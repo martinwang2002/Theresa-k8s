@@ -1,43 +1,30 @@
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  namespace: kube-system
   name: kube-dns-vpa
+  namespace: kube-system
 spec:
+  resourcePolicy:
+    containerPolicies:
+      - containerName: kubedns
+        minAllowed:
+          cpu: 5m
   targetRef:
-    apiVersion: "extensions/v1"
+    apiVersion: extensions/v1
     kind: Deployment
     name: kube-dns
   updatePolicy:
-    updateMode: "Auto"
-  resourcePolicy:
-    containerPolicies:
-    - containerName: kubedns
-      minAllowed:
-        cpu: 5m
+    updateMode: Auto
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  namespace: kube-system
-  name: kube-proxy-vpa
-spec:
-  targetRef:
-    apiVersion: "apps/v1"
-    kind: DaemonSet
-    name: kube-proxy
-  updatePolicy:
-    updateMode: "Auto"
----
-apiVersion: autoscaling.k8s.io/v1
-kind: VerticalPodAutoscaler
-metadata:
-  namespace: kube-system
   name: fluentbit-gke-vpa
+  namespace: kube-system
 spec:
   targetRef:
-    apiVersion: "apps/v1"
+    apiVersion: apps/v1
     kind: DaemonSet
     name: fluentbit-gke
   updatePolicy:
-    updateMode: "Auto"
+    updateMode: Auto

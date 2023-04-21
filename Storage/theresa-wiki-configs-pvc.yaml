@@ -3,16 +3,16 @@ kind: PersistentVolume
 metadata:
   name: theresa-wiki-configs-pv
 spec:
-  capacity:
-    storage: 10Mi
   accessModes:
     - ReadWriteMany
-  nfs:
-    server: nfs-config.default.svc.cluster.local
-    path: "/"
+  capacity:
+    storage: 10Mi
   mountOptions:
     - nfsvers=4.2
     - noatime
+  nfs:
+    path: /
+    server: nfs-config.default.svc.cluster.local
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -21,8 +21,8 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ""
   resources:
     requests:
       storage: 10Mi
+  storageClassName: ""
   volumeName: theresa-wiki-configs-pv

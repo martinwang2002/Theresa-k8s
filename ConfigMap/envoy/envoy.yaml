@@ -9,7 +9,7 @@ static_resources:
         thresholds:
           max_connections: 5
           max_pending_requests: 25
-          max_requests: 5
+          max_requests: 25
           max_retries: 3
       lb_policy: ROUND_ROBIN
       load_assignment:
@@ -27,7 +27,7 @@ static_resources:
         thresholds:
           max_connections: 5
           max_pending_requests: 25
-          max_requests: 5
+          max_requests: 25
           max_retries: 3
       lb_policy: ROUND_ROBIN
       load_assignment:

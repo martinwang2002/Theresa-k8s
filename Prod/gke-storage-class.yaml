@@ -1,17 +1,18 @@
+allowVolumeExpansion: true
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: theresa-wiki-standard
-provisioner: kubernetes.io/gce-pd
-parameters:
-  type: pd-standard
-  fstype: ext4
-  replication-type: none
-allowVolumeExpansion: true
 mountOptions:
   - noatime
   - noiversion
   - journal_checksum
   - journal_async_commit
   - data=writeback
+  - inode_readahead_blks=4096
+parameters:
+  fstype: ext4
+  replication-type: none
+  type: pd-standard
+provisioner: pd.csi.storage.gke.io
 reclaimPolicy: Retain

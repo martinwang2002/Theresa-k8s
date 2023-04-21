@@ -36,7 +36,7 @@ spec:
               path: /api/health
               port: 3000
             initialDelaySeconds: 60
-            periodSeconds: 15
+            periodSeconds: 60
             timeoutSeconds: 5
           name: theresa-frontend
           ports:
@@ -44,10 +44,10 @@ spec:
           resources:
             limits:
               cpu: 500m
-              memory: 750M
+              memory: 600M
             requests:
               cpu: 200m
-              memory: 200M
+              memory: 300M
           startupProbe:
             failureThreshold: 30
             httpGet:

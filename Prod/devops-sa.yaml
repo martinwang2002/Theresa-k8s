@@ -12,6 +12,14 @@ roleRef:
   kind: ClusterRole
   name: cluster-admin
 subjects:
-- kind: ServiceAccount
-  name: devops
-  namespace: default
+  - kind: ServiceAccount
+    name: devops
+    namespace: default
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    kubernetes.io/service-account.name: devops
+  name: devops-token
+type: kubernetes.io/service-account-token

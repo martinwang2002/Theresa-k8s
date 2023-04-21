@@ -2,11 +2,16 @@
 
 
 ## Node pools preparation
-| Node pool | Size | Image | Replicas | Tags | Price Notes |
-| --- | --- | --- | --- | --- | --- |
-| `ingress-pool` | `e2-micro` | COS | 1 | `https-server` | Free tier discount + free ip |
-| `default-pool` | `e2-small` **spot** | COS | 1-3 | / | spot discount |
-| `spot-pool` | `e2-custom-4-12288` **spot** | COS | 0-1 | Taints:spot=true:NoSchedule | spot discount |
+| Node pool | Size | Disk | Image | Replicas | Tags | Price Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| `ingress-pool` | `e2-micro` | 10G SSD | COS | 1 | `https-server` | Free tier discount + free ip |
+| `default-pool` | `e2-small` **spot** | 10G HDD | COS | 1-3 | / | spot discount |
+| `spot-pool` | `e2-custom-4-12288` **spot** | 10G HDD | COS | 0-1 | Taints:spot=true:NoSchedule | spot discount |
+
+Notes:
+* Enable Data Plane V2 b/c cilium
+* choose correct VPC
+* firewall *allow 443 from cloudflare for instance with tag `https-server`*
 
 Expected cost:
 1. `ingress-pool`: $0.10 for free tier + SSD disk
@@ -23,10 +28,7 @@ kubectl apply -f ./Prod/devops-sa.yaml
 
 We need to extract the authentication information for the new Service Account so we can set it up in the Endpoint in Azure DevOps. To do this, first list the secrets in the cluster using the following command
 ```
-kubectl get secret
-```
-```
-kubectl get secret [secret name] -o yaml > sa-secret.yaml
+kubectl get secret devops-token -n default -o yaml > sa-secret.yaml
 ```
 
 generate new k8s connection on `dev.azure.com`
@@ -54,13 +56,6 @@ gcloud iam service-accounts keys create key.json --iam-account kubeip-service-ac
 kubectl create secret generic kubeip-key --from-file=key.json -n kube-system
 ```
 
-Give yourself cluster admin RBAC:
-
-```
-kubectl create clusterrolebinding cluster-admin-binding \
-   --clusterrole cluster-admin --user `gcloud config list --format 'value(core.account)'`
-```
-
 
 Create IP addresses and **label them**. with `kubeip=theresa-wiki-cluster`
 ```
@@ -69,10 +64,10 @@ gcloud beta compute addresses update theresa-wiki-ip --update-labels kubeip=ther
 
 ```
 kubectl apply -f ./ConfigMap/kubeip-ConfigMap.yaml
-kubectl apply -f ./kubeip.yaml
+kubectl apply -f ./App/kubeip.yaml
 ```
 
-## use nginx as *ingress*
+## use envoy as *ingress*
 
 ### SSL
 ```
@@ -83,13 +78,9 @@ kubectl create secret tls theresa-wiki-tls-secret \
 
 ### Envoy
 ```
-kubectl apply -k ./ConfigMap/envoy
+kubectl apply -k ./ConfigMap/envoy.yaml
 ```
 
-### Firewall
-```
-gcloud compute firewall-rules create tls-node-port --allow tcp:443
-```
 
 ## storage system
 ### nfs server for AK_AB_DATA
@@ -97,7 +88,7 @@ gcloud compute firewall-rules create tls-node-port --allow tcp:443
 1. `kubectl apply -f ./Prod/gke-storage-class.yaml` Storage class for the volume
 1. `kubectl apply -f ./Prod/theresa-wiki-pv.yaml`
 1. `kubectl apply -f ./Storage/theresa-wiki-pvc.yaml`
-1. `kubectl apply -f ./nfs-server.yaml`
+1. `kubectl apply -f ./App/nfs-server.yaml`
 1. nfs-folder structure
 
     initiate nfs with folder structure
@@ -105,12 +96,14 @@ gcloud compute firewall-rules create tls-node-port --allow tcp:443
     |____AK_AB_DATA
     ```
     via ssh `kubectl exec nfs-server-0 -it -- sh`
-1. Copy runtime files to folder
-```
-kubectl cp data.db nfs-server-0:/nfs-share/theresa-wiki-configs/theresa-drive
-```
 
 ### theresa-wiki-configs
+1. token
+```
+gcloud iam service-accounts keys create key.json --iam-account gcs-theresa-wiki-k8s-configs@theresa-wiki.iam.gserviceaccount.com
+kubectl create secret generic gcs-theresa-wiki-k8s-configs --from-file=key.json
+```
+
 1. `kubectl apply -f ./Storage/theresa-wiki-configs-pvc.yaml`
 1. theresa-wiki-configs structure
 ```
@@ -118,13 +111,12 @@ kubectl cp data.db nfs-server-0:/nfs-share/theresa-wiki-configs/theresa-drive
 |____theresa-ak-ab-runtime
 |____theresa-drive
 ```
-1. `kubectl apply -f ./nfs-config.yaml`
+1. `kubectl apply -f ./App/nfs-config.yaml`
 
 
 ## Services
 1. Storages
 ```
-kubectl apply -f ./Storage/theresa-wiki-configs.yaml
 kubectl apply -f ./Storage/theresa-ak-ab-data.yaml
 ```
 1. ConfigMaps
@@ -132,14 +124,20 @@ kubectl apply -f ./Storage/theresa-ak-ab-data.yaml
 kubectl apply -f ./ConfigMap/redis-ConfigMap.yaml
 kubectl apply -f ./ConfigMap/theresa-go-ConfigMap.yaml
 ```
+1. PriorityClass
+```
+kubectl apply -f ./ConfigMap/priority-class.yaml
+```
 1. Deployments / Cronjob
 ```
-kubectl apply -f redis.yaml
-kubectl apply -f theresa-go.yaml
-kubectl apply -f theresa-frontend.yaml
-kubectl apply -f theresa-drive.yaml
-kubectl apply -f theresa-ak-ab-sa.yaml
-kubectl apply -f theresa-ak-ab.yaml
+kubectl apply -f ./App/envoy.yaml
+kubectl apply -f ./App/redis.yaml
+kubectl apply -f ./App/mitmproxy.yaml
+kubectl apply -f ./App/theresa-go.yaml
+kubectl apply -f ./App/theresa-frontend.yaml
+kubectl apply -f ./App/theresa-drive.yaml
+kubectl apply -f ./App/theresa-ak-ab-sa.yaml
+kubectl apply -f ./App/theresa-ak-ab.yaml
 ```
 
 ## Rolling update
@@ -184,4 +182,4 @@ turn off `preventSinglePointFailure `
 
 edit laddar config
 
-mkfs.ext4 -b 4096 -i 131072 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard -O dir_index,extent,flex_bg,bigalloc /dev/sdb
+mkfs.ext4 -b 4096 -i 262144 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard -O dir_index,extent,flex_bg /dev/sdb

@@ -3,15 +3,13 @@ kind: PersistentVolume
 metadata:
   name: theresa-wiki-pv
 spec:
-  storageClassName: theresa-wiki-standard
-  capacity:
-    storage: 225Gi
   accessModes:
     - ReadWriteOnce
+  capacity:
+    storage: 225Gi
   gcePersistentDisk:
-    pdName: theresa-wiki-pv
     fsType: ext4
-  persistentVolumeReclaimPolicy: Retain
+    pdName: theresa-wiki-pv
   mountOptions:
     - noatime
     - noiversion
@@ -21,3 +19,5 @@ spec:
     - nobarrier
     - discard
     - inode_readahead_blks=4096
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: theresa-wiki-standard

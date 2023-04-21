@@ -3,16 +3,16 @@ kind: PersistentVolume
 metadata:
   name: theresa-wiki-ak-ab-pv
 spec:
-  capacity:
-    storage: 200Gi
   accessModes:
     - ReadWriteMany
-  nfs:
-    server: nfs-server.default.svc.cluster.local
-    path: "/AK_AB_DATA"
+  capacity:
+    storage: 200Gi
   mountOptions:
     - nfsvers=4.2
     - noatime
+  nfs:
+    path: /AK_AB_DATA
+    server: nfs-server.default.svc.cluster.local
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -21,8 +21,8 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ""
   resources:
     requests:
       storage: 200Gi
+  storageClassName: ""
   volumeName: theresa-wiki-ak-ab-pv
