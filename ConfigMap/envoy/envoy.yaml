@@ -41,18 +41,6 @@ static_resources:
                       port_value: 8000
       name: theresa-go-cluster
       type: STRICT_DNS
-    - lb_policy: ROUND_ROBIN
-      load_assignment:
-        cluster_name: theresa-drive-cluster-service
-        endpoints:
-          - lb_endpoints:
-              - endpoint:
-                  address:
-                    socket_address:
-                      address: theresa-drive.default.svc.cluster.local
-                      port_value: 5244
-      name: theresa-drive-cluster
-      type: STRICT_DNS
   listeners:
     - address:
         socket_address:
@@ -144,15 +132,6 @@ static_resources:
                             prefix: /
                           route:
                             cluster: theresa-go-cluster
-                            timeout: 120s
-                    - domains:
-                        - drive.theresa.wiki
-                      name: drive
-                      routes:
-                        - match:
-                            prefix: /
-                          route:
-                            cluster: theresa-drive-cluster
                             timeout: 120s
                 stat_prefix: ingress_http
           transport_socket:

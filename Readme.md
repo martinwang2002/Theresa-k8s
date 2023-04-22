@@ -78,7 +78,7 @@ kubectl create secret tls theresa-wiki-tls-secret \
 
 ### Envoy
 ```
-kubectl apply -k ./ConfigMap/envoy.yaml
+kubectl apply -k ./ConfigMap/envoy
 ```
 
 
@@ -109,7 +109,6 @@ kubectl create secret generic gcs-theresa-wiki-k8s-configs --from-file=key.json
 ```
 |____theresa-ak-ab
 |____theresa-ak-ab-runtime
-|____theresa-drive
 ```
 1. `kubectl apply -f ./App/nfs-config.yaml`
 
@@ -135,7 +134,6 @@ kubectl apply -f ./App/redis.yaml
 kubectl apply -f ./App/mitmproxy.yaml
 kubectl apply -f ./App/theresa-go.yaml
 kubectl apply -f ./App/theresa-frontend.yaml
-kubectl apply -f ./App/theresa-drive.yaml
 kubectl apply -f ./App/theresa-ak-ab-sa.yaml
 kubectl apply -f ./App/theresa-ak-ab.yaml
 ```
